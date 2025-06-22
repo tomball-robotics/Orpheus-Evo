@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import javax.annotation.processing.SupportedOptions;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -19,23 +21,34 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+@SuppressWarnings("unused")
 public class RobotContainer {
+
+    /* Swerve Config  */
+
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * Constants.CONTROL.STICK_DEADBAND).withRotationalDeadband(MaxAngularRate * Constants.CONTROL.STICK_DEADBAND) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    /* Controls */
 
     private final CommandXboxController driverController = new CommandXboxController(Constants.CONTROL.DRIVER_CONTROLLER_PORT_ID);
     private final CommandXboxController operatorController = new CommandXboxController(Constants.CONTROL.OPERATOR_CONTROLLER_PORT_ID);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    /* Subsystems */
+
+    /* Commands */
+    
+    /* ETC */
+
+    private final Telemetry logger = new Telemetry(MaxSpeed);
+
 
     public RobotContainer() {
         configureBindings();
