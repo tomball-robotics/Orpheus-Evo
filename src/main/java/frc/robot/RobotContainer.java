@@ -60,7 +60,7 @@ public class RobotContainer {
 
 
     public RobotContainer() {
-        configureBindings();
+        configureBindings();   
     }
 
     private void configureBindings() {
