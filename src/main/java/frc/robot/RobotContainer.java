@@ -19,7 +19,11 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Climbers;
+import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.Shooter;
 
 @SuppressWarnings("unused")
 public class RobotContainer {
@@ -34,7 +38,6 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     /* Controls */
 
@@ -42,6 +45,12 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(Constants.CONTROL.OPERATOR_CONTROLLER_PORT_ID);
 
     /* Subsystems */
+
+    public final Swerve swerve = TunerConstants.createDrivetrain();
+    public final Shooter shooter = new Shooter();
+    public final Intake intake = new Intake();
+    public final Climbers climbers = new Climbers();
+    public final LED led = new LED();
 
     /* Commands */
     
@@ -57,9 +66,9 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
+        swerve.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
+            swerve.applyRequest(() ->
                 drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
@@ -70,25 +79,25 @@ public class RobotContainer {
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
-            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+            swerve.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        driverController.b().whileTrue(drivetrain.applyRequest(() ->
+        driverController.a().whileTrue(swerve.applyRequest(() -> brake));
+        driverController.b().whileTrue(swerve.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))
         ));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driverController.back().and(driverController.y()).whileTrue(swerve.sysIdDynamic(Direction.kForward));
+        driverController.back().and(driverController.x()).whileTrue(swerve.sysIdDynamic(Direction.kReverse));
+        driverController.start().and(driverController.y()).whileTrue(swerve.sysIdQuasistatic(Direction.kForward));
+        driverController.start().and(driverController.x()).whileTrue(swerve.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        driverController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        driverController.povUp().onTrue(swerve.runOnce(() -> swerve.seedFieldCentric()));
 
-        drivetrain.registerTelemetry(logger::telemeterize);
+        swerve.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
