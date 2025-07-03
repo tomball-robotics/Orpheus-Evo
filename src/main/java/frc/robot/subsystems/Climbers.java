@@ -17,3 +17,15 @@ public class Climbers extends SubsystemBase {
   
 }
 
+/* FOR DANIEL
+ * 
+ * This subsystem will house the climber motors and their controls.
+ * It will also handle the logic for climbing, such as checking if the climbers are broken,
+ * and controlling the speed of the climbers.
+ * 
+ * You will probably need to use a dutycycleout to control the speed of the climbers,
+ * so that they can be directly linked to an axis on the controller.
+ * dutycycleout is where you feed it a value between -1 and 1,
+ * and it will output that value to the motor, 
+ * -1 being full reverse, 0 being stopped, and 1 being full forward.
+ */
