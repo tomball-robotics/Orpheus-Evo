@@ -36,7 +36,7 @@ public class Shooter extends SubsystemBase {
 
     StatusCode topStatus = StatusCode.StatusCodeNotInitialized;
     StatusCode bottomStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; i++) {
       topStatus = topRoller.getConfigurator().apply(cfg);
       bottomStatus = bottomRoller.getConfigurator().apply(cfg);
       if (topStatus.isOK() && bottomStatus.isOK()) break;

@@ -44,4 +44,8 @@ public class Constants {
         public static final boolean RIGHT_CLIMBER_BROKEN = false;
     }
 
+    public static final class LED {
+        public static final int ledID = -1; //TODO: Tune
+    }
+
 }
