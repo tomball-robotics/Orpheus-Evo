@@ -34,6 +34,8 @@ public class Constants {
         public static final double INTAKE_ROLLER_VELOCITY = 0.0; // TODO: Tune
         public static final double AMP_ROLLER_VELOCITY = 0.0; // TODO: Tune
         public static final double FEED_ROLLER_VELOCITY = 0.0; // TODO: Tune
+
+        public static final int ROLLER_ENCODER_ID = -1; //TODO: Tune
     }
 
     public static final class CLIMBER {
