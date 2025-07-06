@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -12,38 +13,52 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 public class Climbers extends SubsystemBase {
-  /** Creates a new Climbers. */
-  TalonFX climberPullR;
-  TalonFX climberPullL;
 
-  DutyCycleOut dutyCycle = new DutyCycleOut(Constants.CLIMBER.CLIMBER_SPEED);
+  TalonFX leftClimber;
+  TalonFX rightClimber;
 
+  DutyCycleOut leftDutyCycle = new DutyCycleOut(0);
+  DutyCycleOut rightDutyCycle = new DutyCycleOut(0);
 
   public Climbers() {
-    if(Constants.CLIMBER.RIGHT_CLIMBER_BROKEN){
-      climberPullR = new TalonFX(Constants.CLIMBER.RIGHT_MOTOR_ID);
-    }
-    if(Constants.CLIMBER.LEFT_CLIMBER_BROKEN){
-      climberPullL = new TalonFX(Constants.CLIMBER.LEFT_MOTOR_ID);
-    }
+    leftClimber = new TalonFX(Constants.CLIMBER.RIGHT_MOTOR_ID);
+    rightClimber = new TalonFX(Constants.CLIMBER.LEFT_MOTOR_ID);
   }
 
-  public void setClimberSpeed(double output){
-    dutyCycle.Output = output;
-    try{
-      climberPullR.setControl(dutyCycle);
-    }catch(Exception e){}
-    try{
-      climberPullL.setControl(dutyCycle);
-    }catch(Exception e){}
+  public Command setLeftClimberSpeed(double output){
+    return new Command () {
+      @Override
+      public void initialize() {
+        leftDutyCycle.Output = Constants.CLIMBER.LEFT_CLIMBER_BROKEN ? 0 : output;
+      }
+
+      @Override
+      public boolean isFinished() {
+        return true;
+      }
+    };
   }
 
+  public Command setRightClimberSpeed(double output){
+    return new Command () {
+      @Override
+      public void initialize() {
+        rightDutyCycle.Output = Constants.CLIMBER.RIGHT_CLIMBER_BROKEN ? 0 : output;
+      }
+
+      @Override
+      public boolean isFinished() {
+        return true;
+      }
+    };
+  }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Target Speed", dutyCycle.Output);
-    SmartDashboard.putBoolean("Right Climber Working", climberPullR != null);
-    SmartDashboard.putBoolean("Left Climber Working", climberPullL != null);
+    SmartDashboard.putBoolean("Left Climber Broken", Constants.CLIMBER.LEFT_CLIMBER_BROKEN);
+    SmartDashboard.putBoolean("Right Climber Broken", Constants.CLIMBER.RIGHT_CLIMBER_BROKEN);
+    SmartDashboard.putNumber("Left Climber Speed", leftDutyCycle.Output);
+    SmartDashboard.putNumber("Right Climber Speed", rightDutyCycle.Output);
   }
   
 }
