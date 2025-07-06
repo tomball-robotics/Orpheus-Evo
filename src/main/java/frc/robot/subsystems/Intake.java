@@ -76,6 +76,7 @@ public class Intake extends SubsystemBase {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
+    intakeRollers.setControl(coastOut);
   }
 
   public Command setPivotPosition(double setpoint){
