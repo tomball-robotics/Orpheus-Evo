@@ -74,9 +74,18 @@ public class RobotContainer {
         );
 
         // Runs the shooter to the target velcocity while the right bumper is pressed, then returns to coast when released.
-        operatorController.rightBumper().whileTrue(
+        operatorController.rightTrigger().whileTrue(
             shooter.runShooterCommand(Constants.SHOOTER.TARGET_VELOCITY) // Run shooter at target velocity when right bumper is pressed;
         );
+
+        operatorController.leftBumper().onTrue(intake.setPivotPosition(Constants.INTAKE.PIVOT_INTAKE_ANGLE));
+        operatorController.leftBumper().whileTrue(intake.setRollerVelocity(Constants.INTAKE.INTAKE_ROLLER_VELOCITY));
+        operatorController.leftBumper().onFalse(intake.setPivotPosition(Constants.INTAKE.PIVOT_STOW_ANGLE));
+
+        operatorController.rightBumper().onTrue(intake.setPivotPosition(Constants.INTAKE.PIVOT_AMP_ANGLE));
+        operatorController.rightBumper().onFalse(intake.setPivotPosition(Constants.INTAKE.PIVOT_STOW_ANGLE));
+
+        operatorController.leftTrigger().whileTrue(intake.setRollerVelocity(Constants.INTAKE.AMP_ROLLER_VELOCITY));
 
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -97,9 +106,9 @@ public class RobotContainer {
         );
 
         driverController.a().whileTrue(swerve.applyRequest(() -> brake));
-        driverController.b().whileTrue(swerve.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))
-        ));
+        // driverController.b().whileTrue(swerve.applyRequest(() ->
+        //     point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))
+        // ));
 
 
         driverController.back().and(driverController.y()).whileTrue(swerve.sysIdDynamic(Direction.kForward));

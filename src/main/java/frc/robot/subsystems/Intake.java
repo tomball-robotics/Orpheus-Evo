@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
@@ -21,34 +19,36 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
+
   SparkMax intakeLeft;
   SparkMax intakeRight;
   SparkMaxConfig rightConfig;
   SparkMaxConfig leftConfig;
-  TalonFX intakeRollers;
   SparkClosedLoopController intakeRightPivotControl;
+  double pivotSetpoint = 0;
+
+  TalonFX intakeRollers;
   TalonFXConfiguration rollerConfig;
   CoastOut coastOut = new CoastOut();
   VelocityVoltage velocityVoltage = new VelocityVoltage(0).withSlot(0);
-
+  double velocitySetpoint = 0;
   
   public Intake() {
     intakeLeft = new SparkMax(Constants.INTAKE.LEFT_PIVOT_MOTOR_ID, MotorType.kBrushless);
     intakeRight = new SparkMax(Constants.INTAKE.RIGHT_PIVOT_MOTOR_ID, MotorType.kBrushless);
     
     leftConfig = new SparkMaxConfig();
-    leftConfig.follow(Constants.INTAKE.RIGHT_PIVOT_MOTOR_ID);
+    leftConfig.follow(intakeRight);
     intakeLeft.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
 
     intakeRightPivotControl = intakeRight.getClosedLoopController();
     rightConfig = new SparkMaxConfig();
-    rightConfig.encoder.positionConversionFactor(1).velocityConversionFactor(1);
     rightConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
     .p(Constants.INTAKE.PIVOT_P)
     .i(Constants.INTAKE.PIVOT_I)
@@ -63,10 +63,7 @@ public class Intake extends SubsystemBase {
     rollerConfig.Slot0.kI = Constants.INTAKE.ROLLER_VELOCITY_I;
     rollerConfig.Slot0.kD = Constants.INTAKE.ROLLER_VELOCITY_D;
 
-    rollerConfig.Voltage.withPeakForwardVoltage(Volts.of(8)).withPeakReverseVoltage(Volts.of(-8));
-
     StatusCode status = StatusCode.StatusCodeNotInitialized;
-
     for (int i = 0; i < 5; ++i) {
       status = intakeRollers.getConfigurator().apply(rollerConfig);
       if (status.isOK()) break;
@@ -77,11 +74,12 @@ public class Intake extends SubsystemBase {
 
   }
 
-  public Command togglePivot(double setpoint){
+  public Command setPivotPosition(double setpoint){
     return new Command() {
       @Override
       public void initialize() {
         intakeRightPivotControl.setReference(setpoint, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        pivotSetpoint = setpoint;
       }
 
       @Override
@@ -90,17 +88,16 @@ public class Intake extends SubsystemBase {
       }
 
       @Override
-      public void end(boolean interrupted) {
-
-      }
+      public void end(boolean interrupted) {}
     };
   }
 
-  public Command runIntake(double velocity){
+  public Command setRollerVelocity(double velocity){
     return new Command() {
       @Override
       public void initialize() {
         intakeRollers.setControl(velocityVoltage.withVelocity(velocity));
+        velocitySetpoint = velocity;
       }
 
       @Override
@@ -117,7 +114,14 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    
+    SmartDashboard.putNumber("Intake/Pivot/Primary Encoder Position", intakeRight.getEncoder().getPosition());
+    SmartDashboard.putNumber("Intake/Pivot/Setpoint", pivotSetpoint);
+    SmartDashboard.putNumber("Intake/Pivot/Output Current", intakeRight.getOutputCurrent());
+
+    SmartDashboard.putNumber("Intake/Rollers/Velocity", intakeRollers.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Intake/Rollers/Setpoint", velocitySetpoint);
+    SmartDashboard.putNumber("Intake/Rollers/Supply Current", intakeRollers.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putString("Intake/Rollers/Control Mode", intakeRollers.getControlMode().getName());
+
   }
 }
