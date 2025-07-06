@@ -54,7 +54,6 @@ public class RobotContainer {
     public final Shooter shooter = new Shooter();
     public final Intake intake = new Intake();
     public final Climbers climbers = new Climbers();
-    public final LED led = new LED();
 
     /* Commands */
     
@@ -84,8 +83,8 @@ public class RobotContainer {
         );
 
         // Runs the shooter to the target velcocity while the right bumper is pressed, then returns to coast when released.
-        operatorController.rightTrigger().whileTrue(
-            shooter.runShooterCommand(Constants.SHOOTER.TARGET_VELOCITY) // Run shooter at target velocity when right bumper is pressed;
+        operatorController.leftTrigger().whileTrue(
+            shooter.runShooterCommand(Constants.SHOOTER.TARGET_VELOCITY)
         );
 
         operatorController.leftBumper().onTrue(intake.setPivotPosition(Constants.INTAKE.PIVOT_INTAKE_ANGLE));
@@ -95,7 +94,7 @@ public class RobotContainer {
         operatorController.rightBumper().onTrue(intake.setPivotPosition(Constants.INTAKE.PIVOT_AMP_ANGLE));
         operatorController.rightBumper().onFalse(intake.setPivotPosition(Constants.INTAKE.PIVOT_STOW_ANGLE));
 
-        operatorController.leftTrigger().whileTrue(intake.setRollerVelocity(Constants.INTAKE.AMP_ROLLER_VELOCITY));
+        operatorController.rightTrigger().whileTrue(intake.setRollerVelocity(Constants.INTAKE.OUTTAKE_ROLLER_VELOCITY));
 
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.

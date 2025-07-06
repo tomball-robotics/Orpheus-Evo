@@ -50,21 +50,12 @@ public class Shooter extends SubsystemBase {
     bottomRoller.setControl(coastOut);
   }
 
-  /**
-   * Sets the control mode for both shooter rollers to velocity control and runs them at the specified velocity.
-   * 
-   * @param velocity The target velocity in revolutions per second (rps).
-   */
-  public void runShooter(double velocity) {
-    topRoller.setControl(velocityDutyCycle.withVelocity(velocity)); // Switch to velocity control mode
-    bottomRoller.setControl(velocityDutyCycle.withVelocity(velocity)); // Switch to velocity control mode
-  }
-
   public Command runShooterCommand(double velocity) {
     return new Command() {
       @Override
       public void initialize() {
-        runShooter(velocity);
+        topRoller.setControl(velocityDutyCycle.withVelocity(velocity));
+        bottomRoller.setControl(velocityDutyCycle.withVelocity(velocity));
       }
 
       @Override

@@ -7,14 +7,17 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.LED;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+  public static LED led = new LED();
   private final RobotContainer m_robotContainer;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
+    LED.setDisabled();
   }
 
   @Override
@@ -51,6 +54,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    LED.setEnabled();
   }
 
   @Override

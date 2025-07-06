@@ -19,6 +19,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,6 +35,7 @@ public class Intake extends SubsystemBase {
   double pivotSetpoint = 0;
 
   TalonFX intakeRollers;
+  DigitalInput limit = new DigitalInput(Constants.INTAKE.INTAKE_LIMIT_SWITCH);
   TalonFXConfiguration rollerConfig;
   CoastOut coastOut = new CoastOut();
   VelocityVoltage velocityVoltage = new VelocityVoltage(0).withSlot(0);
@@ -44,7 +46,6 @@ public class Intake extends SubsystemBase {
     intakeRight = new SparkMax(Constants.INTAKE.RIGHT_PIVOT_MOTOR_ID, MotorType.kBrushless);
     
     leftConfig = new SparkMaxConfig();
-    leftConfig.follow(intakeRight);
     intakeLeft.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     intakeRightPivotControl = intakeRight.getClosedLoopController();
@@ -57,6 +58,9 @@ public class Intake extends SubsystemBase {
 
     intakeRight.configure(rightConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
+    leftConfig.follow(intakeRight);
+
+    intakeRollers = new TalonFX(Constants.INTAKE.ROLLER_MOTOR_ID);
     rollerConfig = new TalonFXConfiguration();
 
     rollerConfig.Slot0.kP = Constants.INTAKE.ROLLER_VELOCITY_P;
@@ -122,6 +126,17 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Intake/Rollers/Setpoint", velocitySetpoint);
     SmartDashboard.putNumber("Intake/Rollers/Supply Current", intakeRollers.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putString("Intake/Rollers/Control Mode", intakeRollers.getControlMode().getName());
+    SmartDashboard.putBoolean("Intake/Rollers/Limit Switch", limit.get());
 
+    if(limit.get()) {
+      LED.noteIndexed();
+    }else if(intakeRollers.getControlMode().getName().equals(coastOut.getName()) && (intakeRollers.getVelocity().getValueAsDouble() > velocitySetpoint - Constants.INTAKE.ROLLER_VELOCITY_ERROR 
+          && intakeRollers.getVelocity().getValueAsDouble() < velocitySetpoint + Constants.INTAKE.ROLLER_VELOCITY_ERROR)) {
+      LED.intakeAtVelocity();
+    }else if(intakeRollers.getControlMode().getName().equals(coastOut.getName())) {
+      LED.intakeRunning();
+    } else {
+      LED.setEnabled();
+    }
   }
 }

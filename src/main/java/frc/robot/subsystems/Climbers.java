@@ -22,9 +22,6 @@ public class Climbers extends SubsystemBase {
 
   DutyCycleOut leftDutyCycle = new DutyCycleOut(0);
   DutyCycleOut rightDutyCycle = new DutyCycleOut(0);
-
-  private final double MAX_EXTENSION_ROTATIONS = 50.0; // TODO: Tune
-  private final double MIN_RETRACTION_ROTATIONS = 0.0;
   
   public Climbers() {
     leftClimber = new TalonFX(Constants.CLIMBER.RIGHT_MOTOR_ID);
@@ -43,9 +40,9 @@ public class Climbers extends SubsystemBase {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: Tune
     
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAX_EXTENSION_ROTATIONS;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.CLIMBER.MAX_EXTENSION_ROTATIONS;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MIN_RETRACTION_ROTATIONS;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Constants.CLIMBER.MIN_RETRACTION_ROTATIONS;
     
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; i++) {
@@ -59,9 +56,12 @@ public class Climbers extends SubsystemBase {
 
   public Command setClimberSpeed(double leftOutput, double rightOutput){
     return new Command () {
+      {
+        addRequirements(Climbers.this);
+      }
+
       @Override
-      public void initialize() {
-    }
+      public void initialize() {}
 
       @Override
       public void execute() {
@@ -87,12 +87,12 @@ public class Climbers extends SubsystemBase {
 
   public boolean isLeftClimberAtLimit() {
     double position = getLeftClimberPosition();
-    return position <= MIN_RETRACTION_ROTATIONS || position >= MAX_EXTENSION_ROTATIONS;
+    return position <= Constants.CLIMBER.MIN_RETRACTION_ROTATIONS || position >= Constants.CLIMBER.MAX_EXTENSION_ROTATIONS;
   }
 
   public boolean isRightClimberAtLimit() {
     double position = getRightClimberPosition();
-    return position <= MIN_RETRACTION_ROTATIONS || position >= MAX_EXTENSION_ROTATIONS;
+    return position <= Constants.CLIMBER.MIN_RETRACTION_ROTATIONS || position >= Constants.CLIMBER.MAX_EXTENSION_ROTATIONS;
   }
 
   @Override

@@ -8,41 +8,45 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.LEDPattern;
 
 public class LED extends SubsystemBase {
-  Spark led;
-  /** Creates a new LEDs. */
+
+  static Spark led;
+
   public LED() {
     led = new Spark(Constants.LED.ledID);
   }
 
-  public void setColor(double color) {
+  public static void setColor(double color) {
     led.set(color);
   }
 
-  public void setDisabled() {
+  public static void setDisabled() {
     led.set(.61);
   }
 
-  public void setEnabled() {
+  public static void setEnabled() {
     led.set(.61);
   }
 
-  public void isIntake() {
+  public static void noteIndexed() {
     led.set(.77);
   }
 
-  public void intakeIsRunning(){
-    led.set(-.05);
+  public static void intakeAtVelocity() {
+    led.set(-0.05);
   }
 
-  public void shooterRunning(){
+  public static void intakeRunning(){
+    led.set(-0.25);
+  }
+
+  public static void shooterRunning(){
     led.set(-.15);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putString("LED Value", LEDPattern.fromValue(led.get()).name());
+    SmartDashboard.putNumber("LED Output Value", led.get());
   }
 }
