@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -20,7 +21,7 @@ public class Shooter extends SubsystemBase {
   TalonFX topRoller;
   TalonFX bottomRoller;
 
-  VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(Constants.SHOOTER.TARGET_VELOCITY);
+  VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0);
   CoastOut coastOut = new CoastOut();
 
   public Shooter() {
@@ -50,14 +51,32 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
-   * Sets the target velocity for the duty cycle, then applies that to the rollers.
+   * Sets the control mode for both shooter rollers to velocity control and runs them at the specified velocity.
    * 
    * @param velocity The target velocity in revolutions per second (rps).
    */
   public void runShooter(double velocity) {
-    velocityDutyCycle.Velocity = velocity; // Set target velocity
-    topRoller.setControl(velocityDutyCycle); // Switch to velocity control mode
-    bottomRoller.setControl(velocityDutyCycle);
+    topRoller.setControl(velocityDutyCycle.withVelocity(velocity)); // Switch to velocity control mode
+    bottomRoller.setControl(velocityDutyCycle.withVelocity(velocity)); // Switch to velocity control mode
+  }
+
+  public Command runShooterCommand(double velocity) {
+    return new Command() {
+      @Override
+      public void initialize() {
+        runShooter(velocity);
+      }
+
+      @Override
+      public boolean isFinished() {
+        return false; // This command runs indefinitely until interrupted
+      }
+
+      @Override
+      public void end(boolean interrupted) {
+        stopShooter(); // Stop the shooter when the command ends or is interrupted
+      }
+    };
   }
 
   /**

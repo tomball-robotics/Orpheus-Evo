@@ -73,6 +73,11 @@ public class RobotContainer {
             )
         );
 
+        // Runs the shooter to the target velcocity while the right bumper is pressed, then returns to coast when released.
+        operatorController.rightBumper().whileTrue(
+            shooter.runShooterCommand(Constants.SHOOTER.TARGET_VELOCITY) // Run shooter at target velocity when right bumper is pressed;
+        );
+
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         swerve.setDefaultCommand(
