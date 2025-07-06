@@ -97,15 +97,15 @@ public class Climbers extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Left Climber Broken", Constants.CLIMBER.LEFT_CLIMBER_BROKEN);
-    SmartDashboard.putBoolean("Right Climber Broken", Constants.CLIMBER.RIGHT_CLIMBER_BROKEN);
-    SmartDashboard.putNumber("Left Climber Speed", leftDutyCycle.Output);
-    SmartDashboard.putNumber("Right Climber Speed", rightDutyCycle.Output);
+    SmartDashboard.putBoolean("Climbers/Left Climber Broken", Constants.CLIMBER.LEFT_CLIMBER_BROKEN);
+    SmartDashboard.putBoolean("Climbers/Right Climber Broken", Constants.CLIMBER.RIGHT_CLIMBER_BROKEN);
+    SmartDashboard.putNumber("Climbers/Left Climber Speed", leftDutyCycle.Output);
+    SmartDashboard.putNumber("Climbers/Right Climber Speed", rightDutyCycle.Output);
     
-    SmartDashboard.putNumber("Left Climber Position", getLeftClimberPosition());
-    SmartDashboard.putNumber("Right Climber Position", getRightClimberPosition());
-    SmartDashboard.putBoolean("Left Climber At Limit", isLeftClimberAtLimit());
-    SmartDashboard.putBoolean("Right Climber At Limit", isRightClimberAtLimit());
+    SmartDashboard.putNumber("Climbers/Left Climber Position", getLeftClimberPosition());
+    SmartDashboard.putNumber("Climbers/Right Climber Position", getRightClimberPosition());
+    SmartDashboard.putBoolean("Climbers/Left Climber At Limit", isLeftClimberAtLimit());
+    SmartDashboard.putBoolean("Climbers/Right Climber At Limit", isRightClimberAtLimit());
   }
   
 }

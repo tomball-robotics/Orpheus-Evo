@@ -47,6 +47,6 @@ public class LED extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("LED Output Value", led.get());
+    SmartDashboard.putNumber("LED/Output Value", led.get());
   }
 }
