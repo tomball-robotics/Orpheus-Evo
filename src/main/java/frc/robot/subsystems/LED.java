@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -11,42 +7,54 @@ import frc.robot.Constants;
 
 public class LED extends SubsystemBase {
 
-  static Spark led;
+  private static Spark led;
+  private static double currentColor = 0.0;
+  private static String currentState = "Unknown";
 
   public LED() {
     led = new Spark(Constants.LED.ledID);
+    setDisabled();  // Initial state on boot
   }
 
-  public static void setColor(double color) {
-    led.set(color);
+  private static void applyColor(double color, String stateName) {
+    if (currentColor != color) {
+      currentColor = color;
+      currentState = stateName;
+      led.set(color);
+    }
   }
 
   public static void setDisabled() {
-    led.set(.61);
+    applyColor(0.61, "Disabled");
   }
 
   public static void setEnabled() {
-    led.set(.61);
+    applyColor(0.61, "Enabled");
   }
 
   public static void noteIndexed() {
-    led.set(.77);
+    applyColor(0.77, "Note Indexed");
   }
 
   public static void intakeAtVelocity() {
-    led.set(-0.05);
+    applyColor(-0.05, "Intake At Velocity");
   }
 
-  public static void intakeRunning(){
-    led.set(-0.25);
+  public static void intakeRunning() {
+    applyColor(-0.25, "Intake Running");
   }
 
-  public static void shooterRunning(){
-    led.set(-.15);
+  public static void shooterRunning() {
+    applyColor(-0.15, "Shooter Running");
+  }
+
+  public static boolean isInEnabledState() {
+    return currentState.equals("Enabled");
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("LED/Output Value", led.get());
+    SmartDashboard.putNumber("LED/Output Value", currentColor);
+    SmartDashboard.putString("LED/Current State", currentState);
   }
 }

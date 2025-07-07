@@ -22,9 +22,8 @@ public class Shooter extends SubsystemBase {
   TalonFX bottomRoller;
 
   VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0);
-  CoastOut coastOut = new CoastOut();
-
   double velocitySetpoint = 0;
+  CoastOut coastOut = new CoastOut();
 
   public Shooter() {
     topRoller = new TalonFX(Constants.SHOOTER.TOP_ROLLER_MOTOR_ID);
@@ -88,7 +87,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Top Roller RPS", topRoller.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Bottom Roller RPS", bottomRoller.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Rollers Setpoint", velocitySetpoint);
-    SmartDashboard.putString("Shooter/Rollers Control Mode", 
-        topRoller.getControlMode().getName() + " / " + bottomRoller.getControlMode().getName());
+    SmartDashboard.putString("Shooter/Top Roller Control Mode", topRoller.getControlMode().getName());
+    SmartDashboard.putString("Shooter/Bottom Roller Control Mode", bottomRoller.getControlMode().getName());
   }
 }

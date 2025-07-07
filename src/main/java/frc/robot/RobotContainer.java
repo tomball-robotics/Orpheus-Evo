@@ -87,13 +87,13 @@ public class RobotContainer {
         );
 
         operatorController.leftBumper().onTrue(intake.setPivotPosition(Constants.INTAKE.PIVOT_INTAKE_ANGLE));
-        operatorController.leftBumper().whileTrue(intake.setRollerVelocity(Constants.INTAKE.INTAKE_ROLLER_VELOCITY));
+        operatorController.leftBumper().whileTrue(intake.runRollers(Constants.INTAKE.INTAKE_ROLLER_VELOCITY));
         operatorController.leftBumper().onFalse(intake.setPivotPosition(Constants.INTAKE.PIVOT_STOW_ANGLE));
 
         operatorController.rightBumper().onTrue(intake.setPivotPosition(Constants.INTAKE.PIVOT_AMP_ANGLE));
         operatorController.rightBumper().onFalse(intake.setPivotPosition(Constants.INTAKE.PIVOT_STOW_ANGLE));
 
-        operatorController.rightTrigger().whileTrue(intake.setRollerVelocity(Constants.INTAKE.OUTTAKE_ROLLER_VELOCITY));
+        operatorController.rightTrigger().whileTrue(intake.runRollers(Constants.INTAKE.OUTTAKE_ROLLER_VELOCITY));
 
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.

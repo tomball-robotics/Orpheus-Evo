@@ -11,7 +11,7 @@ public class Constants {
     public static final class SHOOTER {
         public static final int TOP_ROLLER_MOTOR_ID = 12;
         public static final int BOTTOM_ROLLER_MOTOR_ID = 13;
-        public static final double VELOCITY_P = .05; // TODO: Tune
+        public static final double VELOCITY_P = .04; // TODO: Tune
         public static final double VELOCITY_I = 0; // TODO: Tune
         public static final double VELOCITY_D = 0; // TODO: Tune
         public static final double TARGET_VELOCITY = 10; // TODO: Tune
@@ -36,6 +36,7 @@ public class Constants {
 
         public static final int INTAKE_LIMIT_SWITCH = 0;
         public static final double ROLLER_VELOCITY_ERROR = 0;
+        public static final double PIVOT_ERROR = 0.2;
     }
 
     public static final class CLIMBER {
