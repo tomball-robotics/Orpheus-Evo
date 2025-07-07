@@ -24,6 +24,8 @@ public class Shooter extends SubsystemBase {
   VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0);
   CoastOut coastOut = new CoastOut();
 
+  double velocitySetpoint = 0;
+
   public Shooter() {
     topRoller = new TalonFX(Constants.SHOOTER.TOP_ROLLER_MOTOR_ID);
     bottomRoller = new TalonFX(Constants.SHOOTER.BOTTOM_ROLLER_MOTOR_ID);
@@ -31,9 +33,9 @@ public class Shooter extends SubsystemBase {
     TalonFXConfiguration cfg = new TalonFXConfiguration();
 
     Slot0Configs slot0 = cfg.Slot0; // TODO: Tune PID Constants
-    slot0.kP = 0;
-    slot0.kI = 0;
-    slot0.kD = 0;
+    slot0.kP = Constants.SHOOTER.VELOCITY_P;
+    slot0.kI = Constants.SHOOTER.VELOCITY_I; 
+    slot0.kD = Constants.SHOOTER.VELOCITY_D;
 
     StatusCode topStatus = StatusCode.StatusCodeNotInitialized;
     StatusCode bottomStatus = StatusCode.StatusCodeNotInitialized;
@@ -43,7 +45,7 @@ public class Shooter extends SubsystemBase {
       if (topStatus.isOK() && bottomStatus.isOK()) break;
     }
     if (!(topStatus.isOK() && bottomStatus.isOK())) {
-      System.out.println("Could not configure device. Top error: " + topStatus.toString() + " Bottom error: " + bottomStatus.toString());
+      System.out.println("Could not configure shooter motors. Top status: " + topStatus.toString() + " Bottom status: " + bottomStatus.toString());
     }
 
     topRoller.setControl(coastOut);
@@ -56,6 +58,8 @@ public class Shooter extends SubsystemBase {
       public void initialize() {
         topRoller.setControl(velocityDutyCycle.withVelocity(velocity));
         bottomRoller.setControl(velocityDutyCycle.withVelocity(velocity));
+        velocitySetpoint = velocity; // Store the setpoint for potential future use
+        System.out.println("Shooter rollers set to velocity: " + velocity);
       }
 
       @Override
@@ -66,6 +70,7 @@ public class Shooter extends SubsystemBase {
       @Override
       public void end(boolean interrupted) {
         stopShooter(); // Stop the shooter when the command ends or is interrupted
+        System.out.println("Shooter rollers stopped.");
       }
     };
   }
@@ -82,8 +87,8 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Shooter/Top Roller RPS", topRoller.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Bottom Roller RPS", bottomRoller.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Shooter/Duty Cycle Velocity", velocityDutyCycle.Velocity);
-    SmartDashboard.putBoolean("Shooter/Rollers in Coast", topRoller.getControlMode().getName() == coastOut.getName());
-    SmartDashboard.putBoolean("Shooter/Rollers in Velocity", topRoller.getControlMode().getName() == velocityDutyCycle.getName());
+    SmartDashboard.putNumber("Shooter/Rollers Setpoint", velocitySetpoint);
+    SmartDashboard.putString("Shooter/Rollers Control Mode", 
+        topRoller.getControlMode().getName() + " / " + bottomRoller.getControlMode().getName());
   }
 }

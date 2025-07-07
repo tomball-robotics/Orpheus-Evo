@@ -68,7 +68,6 @@ public class RobotContainer {
 
         configureBindings();
 
-        // Warmup PathPlanner to avoid Java pauses
         FollowPathCommand.warmupCommand().schedule();  
     }
 
@@ -77,8 +76,8 @@ public class RobotContainer {
         // Climber up when you press bumper, and down when you press trigger.
         climbers.setDefaultCommand(
             climbers.setClimberSpeed(
-                (driverController.leftBumper().getAsBoolean() ? Constants.CLIMBER.CLIMBER_SPEED : 0.0) - driverController.getLeftTriggerAxis()/2,
-                (driverController.rightBumper().getAsBoolean() ? Constants.CLIMBER.CLIMBER_SPEED : 0.0) - driverController.getRightTriggerAxis()/2
+                () -> (driverController.leftBumper().getAsBoolean() ? Constants.CLIMBER.CLIMBER_SPEED : 0.0) - driverController.getLeftTriggerAxis()/2,
+                () -> (driverController.rightBumper().getAsBoolean() ? Constants.CLIMBER.CLIMBER_SPEED : 0.0) - driverController.getRightTriggerAxis()/2
             )
         );
 

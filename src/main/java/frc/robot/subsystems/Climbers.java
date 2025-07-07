@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -54,7 +56,7 @@ public class Climbers extends SubsystemBase {
     }
   }
 
-  public Command setClimberSpeed(double leftOutput, double rightOutput){
+  public Command setClimberSpeed(DoubleSupplier leftOutput, DoubleSupplier rightOutput){
     return new Command () {
       {
         addRequirements(Climbers.this);
@@ -65,8 +67,8 @@ public class Climbers extends SubsystemBase {
 
       @Override
       public void execute() {
-        leftClimber.setControl(leftDutyCycle.withOutput(Constants.CLIMBER.LEFT_CLIMBER_BROKEN ? 0 : leftOutput));
-        rightClimber.setControl(rightDutyCycle.withOutput(Constants.CLIMBER.RIGHT_CLIMBER_BROKEN ? 0 : rightOutput));
+        leftClimber.setControl(leftDutyCycle.withOutput(Constants.CLIMBER.LEFT_CLIMBER_DISABLED ? 0 : leftOutput.getAsDouble()));
+        rightClimber.setControl(rightDutyCycle.withOutput(Constants.CLIMBER.RIGHT_CLIMBER_DISABLED ? 0 : rightOutput.getAsDouble()));
       }
 
       @Override
@@ -76,36 +78,24 @@ public class Climbers extends SubsystemBase {
     };
   }
 
-  // Utility methods for position checking
-  public double getLeftClimberPosition() {
-    return leftClimber.getPosition().getValueAsDouble();
-  }
-
-  public double getRightClimberPosition() {
-    return rightClimber.getPosition().getValueAsDouble();
-  }
-
-  public boolean isLeftClimberAtLimit() {
-    double position = getLeftClimberPosition();
-    return position <= Constants.CLIMBER.MIN_RETRACTION_ROTATIONS || position >= Constants.CLIMBER.MAX_EXTENSION_ROTATIONS;
-  }
-
-  public boolean isRightClimberAtLimit() {
-    double position = getRightClimberPosition();
-    return position <= Constants.CLIMBER.MIN_RETRACTION_ROTATIONS || position >= Constants.CLIMBER.MAX_EXTENSION_ROTATIONS;
-  }
-
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Climbers/Left Climber Broken", Constants.CLIMBER.LEFT_CLIMBER_BROKEN);
-    SmartDashboard.putBoolean("Climbers/Right Climber Broken", Constants.CLIMBER.RIGHT_CLIMBER_BROKEN);
-    SmartDashboard.putNumber("Climbers/Left Climber Speed", leftDutyCycle.Output);
-    SmartDashboard.putNumber("Climbers/Right Climber Speed", rightDutyCycle.Output);
+    SmartDashboard.putBoolean("Climbers/Left Climber Enabled", !Constants.CLIMBER.LEFT_CLIMBER_DISABLED);
+    SmartDashboard.putBoolean("Climbers/Right Climber Enabled", !Constants.CLIMBER.RIGHT_CLIMBER_DISABLED);
+
+    boolean leftClimberAtLimit = 
+      Math.abs(leftClimber.getPosition().getValueAsDouble() - Constants.CLIMBER.MAX_EXTENSION_ROTATIONS) <= Constants.CLIMBER.ERROR ||
+      Math.abs(leftClimber.getPosition().getValueAsDouble() - Constants.CLIMBER.MIN_RETRACTION_ROTATIONS) <= Constants.CLIMBER.ERROR;
+
+    boolean rightClimberAtLimit = 
+      Math.abs(rightClimber.getPosition().getValueAsDouble() - Constants.CLIMBER.MAX_EXTENSION_ROTATIONS) <= Constants.CLIMBER.ERROR ||
+      Math.abs(rightClimber.getPosition().getValueAsDouble() - Constants.CLIMBER.MIN_RETRACTION_ROTATIONS) <= Constants.CLIMBER.ERROR;
+
+    SmartDashboard.putBoolean("Climbers/Left Climber at Limit", leftClimberAtLimit);
+    SmartDashboard.putBoolean("Climbers/Right Climber at Limit", rightClimberAtLimit);
     
-    SmartDashboard.putNumber("Climbers/Left Climber Position", getLeftClimberPosition());
-    SmartDashboard.putNumber("Climbers/Right Climber Position", getRightClimberPosition());
-    SmartDashboard.putBoolean("Climbers/Left Climber At Limit", isLeftClimberAtLimit());
-    SmartDashboard.putBoolean("Climbers/Right Climber At Limit", isRightClimberAtLimit());
+    SmartDashboard.putNumber("Climbers/Left Climber Position", leftClimber.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Climbers/Right Climber Position", rightClimber.getPosition().getValueAsDouble());
   }
   
 }
