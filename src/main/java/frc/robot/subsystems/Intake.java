@@ -91,22 +91,33 @@ public class Intake extends SubsystemBase {
     }, this);
   }
 
+  private void setRollerVelocity(double velocity) {
+    intakeRollers.setControl(velocityVoltage.withVelocity(velocity));
+    velocitySetpoint = velocity;
+    System.out.println("Intake rollers set to velocity: " + velocitySetpoint + " RPS");
+  }
+
+  private void stopRollers() {
+    intakeRollers.setControl(coastOut);
+    velocitySetpoint = 0;
+    System.out.println("Intake rollers stopped.");
+  }
+
   public Command runRollers(double velocity) {
     return new Command() {
       @Override
       public void initialize() {
-        intakeRollers.setControl(velocityVoltage.withVelocity(velocity));
-        velocitySetpoint = velocity;
+        setRollerVelocity(velocity);
       }
 
       @Override
       public boolean isFinished() {
-        return true;
+        return false;
       }
 
       @Override
       public void end(boolean interrupted) {
-        intakeRollers.setControl(coastOut);
+        stopRollers();
       }
     };
   }
