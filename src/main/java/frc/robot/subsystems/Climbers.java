@@ -29,17 +29,17 @@ public class Climbers extends SubsystemBase {
     leftClimber = new TalonFX(Constants.CLIMBER.RIGHT_MOTOR_ID);
     rightClimber = new TalonFX(Constants.CLIMBER.LEFT_MOTOR_ID);
     
-    configureClimber(leftClimber);
-    configureClimber(rightClimber);
+    configureClimber(leftClimber, true);
+    configureClimber(rightClimber, false);
     
     leftClimber.setPosition(0);
     rightClimber.setPosition(0);
   }
 
-  private void configureClimber(TalonFX climber) {
+  private void configureClimber(TalonFX climber, boolean invert) {
     TalonFXConfiguration config = new TalonFXConfiguration();
     
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: Tune
+    config.MotorOutput.Inverted = invert ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.CLIMBER.MAX_EXTENSION_ROTATIONS;
